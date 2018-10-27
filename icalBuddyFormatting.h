@@ -29,24 +29,24 @@ THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-#import <CalendarStore/CalendarStore.h>
+#import <EventKit/EventKit.h>
 
 void initFormatting(NSDictionary *aFormattingConfigDict, NSArray *aPropertySeparators);
 
 NSColor *getClosestAnsiColorForColor(NSColor *color, BOOL foreground);
 
-NSMutableDictionary* formattingConfigToStringAttributes(NSString *formattingConfig, CalCalendarItem *calItem);
+NSMutableDictionary* formattingConfigToStringAttributes(NSString *formattingConfig, EKCalendarItem *calItem);
 
 void processCustomStringAttributes(NSMutableAttributedString **aAttributedString);
 
-NSDictionary* getStringAttributesForKey(NSString *key, CalCalendarItem *calItem);
+NSDictionary* getStringAttributesForKey(NSString *key, EKCalendarItem *calItem);
 
 NSDictionary* getSectionTitleStringAttributes(NSString *sectionTitle);
-NSDictionary* getFirstLineStringAttributes(CalCalendarItem *calItem);
-NSDictionary* getBulletStringAttributes(BOOL isAlertBullet, CalCalendarItem *calItem);
-NSDictionary* getCalNameInTitleStringAttributes(CalCalendarItem *calItem);
-NSDictionary* getPropNameStringAttributes(NSString *propName, CalCalendarItem *calItem);
-NSDictionary* getPropValueStringAttributes(NSString *propName, NSString *propValue, CalCalendarItem *calItem);
+NSDictionary* getFirstLineStringAttributes(EKCalendarItem *calItem);
+NSDictionary* getBulletStringAttributes(BOOL isAlertBullet, EKCalendarItem *calItem);
+NSDictionary* getCalNameInTitleStringAttributes(EKCalendarItem *calItem);
+NSDictionary* getPropNameStringAttributes(NSString *propName, EKCalendarItem *calItem);
+NSDictionary* getPropValueStringAttributes(NSString *propName, NSString *propValue, EKCalendarItem *calItem);
 
 NSString* getPropSeparatorStr(NSUInteger propertyNumber);
 

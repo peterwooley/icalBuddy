@@ -122,7 +122,7 @@ NSColor *getClosestAnsiColorForColor(NSColor *color, BOOL foreground)
 // pairs (suitable for using directly with NSMutableAttributedString's
 // attribute setter methods) based on a user-defined formatting specification
 // (from the config file, like: "red,bg:blue,bold")
-NSMutableDictionary* formattingConfigToStringAttributes(NSString *formattingConfig, CalCalendarItem *calItem)
+NSMutableDictionary* formattingConfigToStringAttributes(NSString *formattingConfig, EKCalendarItem *calItem)
 {
     NSMutableDictionary *returnAttributes = [NSMutableDictionary dictionary];
 
@@ -320,7 +320,7 @@ void processCustomStringAttributes(NSMutableAttributedString **aAttributedString
 
 
 // return formatting string attributes for specified key
-NSDictionary* getStringAttributesForKey(NSString *key, CalCalendarItem *calItem)
+NSDictionary* getStringAttributesForKey(NSString *key, EKCalendarItem *calItem)
 {
     if (key == nil)
         return [NSDictionary dictionary];
@@ -349,7 +349,7 @@ NSDictionary* getSectionTitleStringAttributes(NSString *sectionTitle)
 
 // return string attributes for formatting the first printed
 // line for a calendar item
-NSDictionary* getFirstLineStringAttributes(CalCalendarItem *calItem)
+NSDictionary* getFirstLineStringAttributes(EKCalendarItem *calItem)
 {
     return getStringAttributesForKey(kFormatKeyFirstItemLine, calItem);
 }
@@ -357,7 +357,7 @@ NSDictionary* getFirstLineStringAttributes(CalCalendarItem *calItem)
 
 
 // return string attributes for formatting a bullet point
-NSDictionary* getBulletStringAttributes(BOOL isAlertBullet, CalCalendarItem *calItem)
+NSDictionary* getBulletStringAttributes(BOOL isAlertBullet, EKCalendarItem *calItem)
 {
     return getStringAttributesForKey((isAlertBullet) ? kFormatKeyAlertBullet : kFormatKeyBullet, calItem);
 }
@@ -365,14 +365,14 @@ NSDictionary* getBulletStringAttributes(BOOL isAlertBullet, CalCalendarItem *cal
 
 // return string attributes for calendar names printed along
 // with title properties
-NSDictionary* getCalNameInTitleStringAttributes(CalCalendarItem *calItem)
+NSDictionary* getCalNameInTitleStringAttributes(EKCalendarItem *calItem)
 {
     return getStringAttributesForKey(kFormatKeyCalendarNameInTitle, calItem);
 }
 
 
 // return string attributes for formatting a property name
-NSDictionary* getPropNameStringAttributes(NSString *propName, CalCalendarItem *calItem)
+NSDictionary* getPropNameStringAttributes(NSString *propName, EKCalendarItem *calItem)
 {
     if (propName == nil)
         return [NSDictionary dictionary];
@@ -383,7 +383,7 @@ NSDictionary* getPropNameStringAttributes(NSString *propName, CalCalendarItem *c
 
 
 // return string attributes for formatting a property value
-NSDictionary* getPropValueStringAttributes(NSString *propName, NSString *propValue, CalCalendarItem *calItem)
+NSDictionary* getPropValueStringAttributes(NSString *propName, NSString *propValue, EKCalendarItem *calItem)
 {
     if (propName == nil)
         return [NSDictionary dictionary];

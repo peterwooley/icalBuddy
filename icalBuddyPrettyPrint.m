@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 #import "icalBuddyPrettyPrint.h"
 #import "icalBuddyDefines.h"
+#import <EventKit/EventKit.h>
 
 #import "icalBuddyL10N.h"
 #import "icalBuddyFormatting.h"
@@ -286,55 +287,55 @@ NSString* dateStr(NSDate *date, DatePrintOption printOption)
 
 
 
-PropertyPresentationElements *getEventTitlePresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventTitlePresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
     NSString *thisPropTempValue = nil;
 
-    if ([[[event calendar] type] isEqualToString:CalCalendarTypeBirthday])
-    {
-        ABAddressBook *addressBook = [ABAddressBook sharedAddressBook];
+    //if ([[[event calendar] type] isEqualToString:EKCalendarTypeBirthday])
+    //{
+    //    ABAddressBook *addressBook = [ABAddressBook sharedAddressBook];
 
-        // If the user has Mountain Lion or later, and has denied icalBuddy access to their
-        // contacts, then -sharedAddressBook will return nil.
-        if (addressBook == nil)
-        {
-            thisPropTempValue = [event title];
-        }
-        else
-        {
-            // special case for events in the Birthdays calendar (they don't seem to have titles
-            // so we have to use the URI to find the ABPerson from the Address Book
-            // and print their name from there)
+    //    // If the user has Mountain Lion or later, and has denied icalBuddy access to their
+    //    // contacts, then -sharedAddressBook will return nil.
+    //    if (addressBook == nil)
+    //    {
+    //        thisPropTempValue = [event title];
+    //    }
+    //    else
+    //    {
+    //        // special case for events in the Birthdays calendar (they don't seem to have titles
+    //        // so we have to use the URI to find the ABPerson from the Address Book
+    //        // and print their name from there)
 
-            NSString *personId = [[NSString stringWithFormat:@"%@", [event url]]
-                stringByReplacingOccurrencesOfString:@"addressbook://"
-                withString:@""
-                ];
-            ABRecord *person = [[ABAddressBook sharedAddressBook] recordForUniqueId:personId];
+    //        NSString *personId = [[NSString stringWithFormat:@"%@", [event URL]]
+    //            stringByReplacingOccurrencesOfString:@"addressbook://"
+    //            withString:@""
+    //            ];
+    //        ABRecord *person = [[ABAddressBook sharedAddressBook] recordForUniqueId:personId];
 
-            if (person != nil && [person isMemberOfClass: [ABPerson class]])
-            {
-                NSString *thisTitle = nil;
-                if ([person isEqual:[[ABAddressBook sharedAddressBook] me]])
-                    thisTitle = localizedStr(kL10nKeyMyBirthday);
-                else
-                {
-                    NSString *contactFullName = [person hg_fullName];
-                    NSInteger contactAge = [person hg_ageOnDate:[event startDate]];
-                    BOOL ageIsValid = (0 < contactAge && contactAge < 130);
-                    NSString *birthdayFormat = localizedStr(ageIsValid ? kL10nKeySomeonesBirthday : kL10nKeySomeonesBirthdayNoAge);
-                    if ([birthdayFormat rangeOfString:@"%i"].location != NSNotFound)
-                        thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName, contactAge];
-                    else
-                        thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName];
-                }
-                thisPropTempValue = thisTitle;
-            }
-        }
-    }
-    else
+    //        if (person != nil && [person isMemberOfClass: [ABPerson class]])
+    //        {
+    //            NSString *thisTitle = nil;
+    //            if ([person isEqual:[[ABAddressBook sharedAddressBook] me]])
+    //                thisTitle = localizedStr(kL10nKeyMyBirthday);
+    //            else
+    //            {
+    //                NSString *contactFullName = [person hg_fullName];
+    //                NSInteger contactAge = [person hg_ageOnDate:[event startDate]];
+    //                BOOL ageIsValid = (0 < contactAge && contactAge < 130);
+    //                NSString *birthdayFormat = localizedStr(ageIsValid ? kL10nKeySomeonesBirthday : kL10nKeySomeonesBirthdayNoAge);
+    //                if ([birthdayFormat rangeOfString:@"%i"].location != NSNotFound)
+    //                    thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName, contactAge];
+    //                else
+    //                    thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName];
+    //            }
+    //            thisPropTempValue = thisTitle;
+    //        }
+    //    }
+    //}
+    //else
         thisPropTempValue = [event title];
 
     if (thisPropTempValue != nil)
@@ -354,7 +355,7 @@ PropertyPresentationElements *getEventTitlePresentation(CalEvent *event, CalItem
     return elements;
 }
 
-PropertyPresentationElements *getEventLocationPresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventLocationPresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -368,7 +369,7 @@ PropertyPresentationElements *getEventLocationPresentation(CalEvent *event, CalI
     return elements;
 }
 
-PropertyPresentationElements *getEventNotesPresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventNotesPresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -406,21 +407,21 @@ PropertyPresentationElements *getEventNotesPresentation(CalEvent *event, CalItem
     return elements;
 }
 
-PropertyPresentationElements *getEventURLPresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventURLPresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
     elements.name = M_ATTR_STR(strConcat(localizedStr(kL10nKeyPropNameUrl), @":", nil));
 
-    if ([event url] != nil &&
-        ![[[event calendar] type] isEqualToString:CalCalendarTypeBirthday]
+    if ([event URL] != nil &&
+        ![[[event calendar] type] isEqualToString:EKCalendarTypeBirthday]
         )
-        elements.value = M_ATTR_STR(([NSString stringWithFormat: @"%@", [event url]]));
+        elements.value = M_ATTR_STR(([NSString stringWithFormat: @"%@", [event URL]]));
 
     return elements;
 }
 
-PropertyPresentationElements *getEventUIDPresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventUIDPresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -430,40 +431,42 @@ PropertyPresentationElements *getEventUIDPresentation(CalEvent *event, CalItemPr
     return elements;
 }
 
-PropertyPresentationElements *getEventAttendeesPresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventAttendeesPresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
     elements.name = M_ATTR_STR(strConcat(localizedStr(kL10nKeyPropNameAttendees), @":", nil));
 
-    if ([event attendees] != nil && ![[[event calendar] type] isEqualToString:CalCalendarTypeBirthday])
-    {
+    // TODO Something in this if check on the line below is causing a segfault
+    //if ([event attendees] != nil && ![[[event calendar] type] isEqualToString:EKCalendarTypeBirthday])
+    //{
         NSMutableArray *attendeeNames = [NSMutableArray array];
-        for (CalAttendee *attendee in [event attendees])
-        {
-            NSString *attendeeDisplayName = [attendee commonName] ?: [NSString stringWithFormat:@"%@", [attendee address]];
-            [attendeeNames addObject:attendeeDisplayName];
-        }
-        if (0 < printOptions.maxNumPrintedAttendees && printOptions.maxNumPrintedAttendees < attendeeNames.count)
-        {
-            attendeeNames = [[attendeeNames subarrayWithRange:NSMakeRange(0, printOptions.maxNumPrintedAttendees)]
-                             arrayByAddingObject:@"..."].mutableCopy;
-        }
+        //for (EKParticipant *attendee in [event attendees])
+        //{
+        //    // TODO: Find another way to get address, as there is no EKParticipant attendee property
+        //    NSString *attendeeDisplayName = [attendee name];// ?: [NSString stringWithFormat:@"%@", [attendee address]];
+        //    [attendeeNames addObject:attendeeDisplayName];
+        //}
+        //if (0 < printOptions.maxNumPrintedAttendees && printOptions.maxNumPrintedAttendees < attendeeNames.count)
+        //{
+        //    attendeeNames = [[attendeeNames subarrayWithRange:NSMakeRange(0, printOptions.maxNumPrintedAttendees)]
+        //                     arrayByAddingObject:@"..."].mutableCopy;
+        //}
         elements.value = M_ATTR_STR(([attendeeNames componentsJoinedByString:@", "]));
-    }
+    //}
     return elements;
 }
 
-PropertyPresentationElements *getEventDatetimePresentation(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+PropertyPresentationElements *getEventDatetimePresentation(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
-    if ([[[event calendar] type] isEqualToString:CalCalendarTypeBirthday])
-    {
-        if (!printOptions.singleDay)
-            elements.value = M_ATTR_STR(dateStr([event startDate], ONLY_DATE));
-        return elements;
-    }
+    //if ([[[event calendar] type] isEqualToString:EKCalendarTypeBirthday])
+    //{
+    //    if (!printOptions.singleDay)
+    //        elements.value = M_ATTR_STR(dateStr([event startDate], ONLY_DATE));
+    //    return elements;
+    //}
 
     BOOL startsOnContextDay = NO;
     BOOL endsOnContextDay = NO;
@@ -567,7 +570,7 @@ PropertyPresentationElements *getEventDatetimePresentation(CalEvent *event, CalI
 
 
 // returns a pretty-printed string representation of the specified event property
-NSMutableAttributedString* getEventPropStr(NSString *propName, CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+NSMutableAttributedString* getEventPropStr(NSString *propName, EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     if (event == nil)
         return nil;
@@ -617,33 +620,35 @@ NSMutableAttributedString* getEventPropStr(NSString *propName, CalEvent *event, 
             ];
     }
 
-    [elements.value
-        setAttributes:getPropValueStringAttributes(propName, [elements.value string], event)
-        range:NSMakeRange(0, [elements.value length])
-        ];
+    DebugPrintf(@"event: %@\n", [event title]);
+    //[elements.value
+    //    setAttributes:getPropValueStringAttributes(propName, [elements.value string], event)
+    //    range:NSMakeRange(0, [elements.value length])
+    //    ];
 
     // if no foreground color for title, use calendar color by default
-    if ([propName isEqualToString:kPropName_title]
-        && prettyPrintOptions.useCalendarColorsForTitles
-        && ![[[elements.value attributesAtIndex:0 effectiveRange:NULL] allKeys] containsObject:NSForegroundColorAttributeName]
-        )
-        [elements.value
-            addAttribute:NSForegroundColorAttributeName
-            value:getClosestAnsiColorForColor([[event calendar] color], YES)
-            range:NSMakeRange(0, [elements.value length])
-            ];
+    //if ([propName isEqualToString:kPropName_title]
+    //    && prettyPrintOptions.useCalendarColorsForTitles
+    //    && ![[[elements.value attributesAtIndex:0 effectiveRange:NULL] allKeys] containsObject:NSForegroundColorAttributeName]
+    //    )
+    //    [elements.value
+    //        addAttribute:NSForegroundColorAttributeName
+    //        value:getClosestAnsiColorForColor([[event calendar] color], YES)
+    //        range:NSMakeRange(0, [elements.value length])
+    //        ];
 
-    if (elements.valueSuffix != nil)
-        [elements.value appendAttributedString:elements.valueSuffix];
+    //if (elements.valueSuffix != nil)
+    //    [elements.value appendAttributedString:elements.valueSuffix];
 
     NSMutableAttributedString *retVal = kEmptyMutableAttributedString;
 
-    if (elements.name != nil && !printOptions.withoutPropNames)
-    {
-        [elements.name appendAttributedString:ATTR_STR(@" ")];
-        [retVal appendAttributedString:elements.name];
-    }
+    //if (elements.name != nil && !printOptions.withoutPropNames)
+    //{
+    //    [elements.name appendAttributedString:ATTR_STR(@" ")];
+    //    [retVal appendAttributedString:elements.name];
+    //}
 
+    DebugPrintf(@"elements.value: %@\n", elements.value);
     [retVal appendAttributedString:elements.value];
 
     return retVal;
@@ -653,7 +658,7 @@ NSMutableAttributedString* getEventPropStr(NSString *propName, CalEvent *event, 
 
 
 // pretty-prints out the specified event
-void printCalEvent(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay)
+void printCalEvent(EKEvent *event, EKItemPrintOption printOptions, NSDate *contextDay)
 {
     if (prettyPrintOptions.maxNumPrintedItems > 0 && prettyPrintOptions.maxNumPrintedItems <= prettyPrintOptions.numPrintedItems)
         return;
@@ -726,7 +731,7 @@ void printCalEvent(CalEvent *event, CalItemPrintOption printOptions, NSDate *con
 
 
 
-PropertyPresentationElements *getTaskTitlePresentation(CalTask *task, CalItemPrintOption printOptions)
+PropertyPresentationElements *getTaskTitlePresentation(EKReminder *task, EKItemPrintOption printOptions)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -746,7 +751,7 @@ PropertyPresentationElements *getTaskTitlePresentation(CalTask *task, CalItemPri
     return elements;
 }
 
-PropertyPresentationElements *getTaskNotesPresentation(CalTask *task, CalItemPrintOption printOptions)
+PropertyPresentationElements *getTaskNotesPresentation(EKReminder *task, EKItemPrintOption printOptions)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -779,7 +784,7 @@ PropertyPresentationElements *getTaskNotesPresentation(CalTask *task, CalItemPri
     return elements;
 }
 
-PropertyPresentationElements *getTaskURLPresentation(CalTask *task, CalItemPrintOption printOptions)
+PropertyPresentationElements *getTaskURLPresentation(EKReminder *task, EKItemPrintOption printOptions)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -791,7 +796,7 @@ PropertyPresentationElements *getTaskURLPresentation(CalTask *task, CalItemPrint
     return elements;
 }
 
-PropertyPresentationElements *getTaskUIDPresentation(CalTask *task, CalItemPrintOption printOptions)
+PropertyPresentationElements *getTaskUIDPresentation(EKReminder *task, EKItemPrintOption printOptions)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -801,7 +806,7 @@ PropertyPresentationElements *getTaskUIDPresentation(CalTask *task, CalItemPrint
     return elements;
 }
 
-PropertyPresentationElements *getTaskDatetimePresentation(CalTask *task, CalItemPrintOption printOptions)
+PropertyPresentationElements *getTaskDatetimePresentation(EKReminder *task, EKItemPrintOption printOptions)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
@@ -813,37 +818,37 @@ PropertyPresentationElements *getTaskDatetimePresentation(CalTask *task, CalItem
     return elements;
 }
 
-NSString *localizedPriority(CalPriority priority)
+NSString *localizedPriority(EKReminderPriority priority)
 {
     switch(priority)
     {
-        case CalPriorityHigh:
+        case EKReminderPriorityHigh:
             return localizedStr(kL10nKeyPriorityHigh);
             break;
-        case CalPriorityMedium:
+        case EKReminderPriorityMedium:
             return localizedStr(kL10nKeyPriorityMedium);
             break;
-        case CalPriorityLow:
+        case EKReminderPriorityLow:
             return localizedStr(kL10nKeyPriorityLow);
             break;
-        case CalPriorityNone:
+        case EKReminderPriorityNone:
             return localizedStr(kL10nKeyPriorityNone);
             break;
     }
     return [NSString stringWithFormat:@"%ld", (long)priority];
 }
 
-NSString *localizedPriorityTitle(CalPriority priority)
+NSString *localizedPriorityTitle(EKReminderPriority priority)
 {
-    if (priority == CalPriorityNone)
+    if (priority == EKReminderPriorityNone)
         return localizedStr(kL10nKeyPriorityTitleNone);
 
     // If we have a specific translation for this priority title:
-    if (priority == CalPriorityLow && localizedStr(kL10nKeyPriorityTitleLow) != nil)
+    if (priority == EKReminderPriorityLow && localizedStr(kL10nKeyPriorityTitleLow) != nil)
         return localizedStr(kL10nKeyPriorityTitleLow);
-    else if (priority == CalPriorityMedium && localizedStr(kL10nKeyPriorityTitleMedium) != nil)
+    else if (priority == EKReminderPriorityMedium && localizedStr(kL10nKeyPriorityTitleMedium) != nil)
         return localizedStr(kL10nKeyPriorityTitleMedium);
-    else if (priority == CalPriorityHigh && localizedStr(kL10nKeyPriorityTitleHigh) != nil)
+    else if (priority == EKReminderPriorityHigh && localizedStr(kL10nKeyPriorityTitleHigh) != nil)
         return localizedStr(kL10nKeyPriorityTitleHigh);
 
     // Otherwise use the default, generic one:
@@ -851,13 +856,13 @@ NSString *localizedPriorityTitle(CalPriority priority)
              localizedPriority(priority)] capitalizedString];
 }
 
-PropertyPresentationElements *getTaskPriorityPresentation(CalTask *task, CalItemPrintOption printOptions)
+PropertyPresentationElements *getTaskPriorityPresentation(EKReminder *task, EKItemPrintOption printOptions)
 {
     PropertyPresentationElements *elements = [PropertyPresentationElements new];
 
     elements.name = M_ATTR_STR(strConcat(localizedStr(kL10nKeyPropNamePriority), @":", nil));
 
-    if ([task priority] == CalPriorityNone)
+    if ([task priority] == EKReminderPriorityNone)
         return elements;
 
     elements.value = M_ATTR_STR(localizedPriority([task priority]));
@@ -868,7 +873,7 @@ PropertyPresentationElements *getTaskPriorityPresentation(CalTask *task, CalItem
 
 
 // returns a pretty-printed string representation of the specified task property
-NSMutableAttributedString* getTaskPropStr(NSString *propName, CalTask *task, CalItemPrintOption printOptions)
+NSMutableAttributedString* getTaskPropStr(NSString *propName, EKReminder *task, EKItemPrintOption printOptions)
 {
     if (task == nil)
         return nil;
@@ -950,7 +955,7 @@ NSMutableAttributedString* getTaskPropStr(NSString *propName, CalTask *task, Cal
 
 
 // pretty-prints out the specified task
-void printCalTask(CalTask *task, CalItemPrintOption printOptions)
+void printCalTask(EKReminder *task, EKItemPrintOption printOptions)
 {
     if (prettyPrintOptions.maxNumPrintedItems > 0 && prettyPrintOptions.maxNumPrintedItems <= prettyPrintOptions.numPrintedItems)
         return;
@@ -1030,7 +1035,7 @@ void printCalTask(CalTask *task, CalItemPrintOption printOptions)
 
 
 
-void printItemSections(NSArray *sections, CalItemPrintOption printOptions)
+void printItemSections(NSArray *sections, EKItemPrintOption printOptions)
 {
     BOOL currentIsFirstPrintedSection = YES;
 
@@ -1063,7 +1068,7 @@ void printItemSections(NSArray *sections, CalItemPrintOption printOptions)
         {
             [thisOutput
                 addAttribute:NSForegroundColorAttributeName
-                value:getClosestAnsiColorForColor([[((CalCalendarItem *)[section.items objectAtIndex:0]) calendar] color], YES)
+                value:getClosestAnsiColorForColor([[((EKCalendarItem *)[section.items objectAtIndex:0]) calendar] color], YES)
                 range:NSMakeRange(0, [thisOutput length])
                 ];
         }
@@ -1087,17 +1092,17 @@ void printItemSections(NSArray *sections, CalItemPrintOption printOptions)
         }
 
         // print items in section
-        for (CalCalendarItem *item in section.items)
+        for (EKCalendarItem *item in section.items)
         {
-            if ([item isKindOfClass:[CalEvent class]])
+            if ([item isKindOfClass:[EKEvent class]])
             {
                 NSDate *contextDay = section.eventsContextDay;
                 if (contextDay == nil)
                     contextDay = now;
-                printCalEvent((CalEvent*)item, printOptions, contextDay);
+                printCalEvent((EKEvent*)item, printOptions, contextDay);
             }
-            else if ([item isKindOfClass:[CalTask class]])
-                printCalTask((CalTask*)item, printOptions);
+            else if ([item isKindOfClass:[EKReminder class]])
+                printCalTask((EKReminder*)item, printOptions);
         }
     }
 }
@@ -1108,7 +1113,7 @@ void printAllCalendars(AppOptions *opts)
 {
     NSArray *calendars = getCalendars(opts);
 
-    for (CalCalendar *cal in calendars)
+    for (EKCalendar *cal in calendars)
     {
         ADD_TO_OUTPUT_BUFFER(ATTR_STR(@"• "));
         NSMutableAttributedString *calendarName = M_ATTR_STR([cal title]);

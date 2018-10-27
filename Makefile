@@ -48,7 +48,7 @@ icalBuddy: $(SOURCE_FILES) icalBuddy.m
 	@echo
 	@echo ---- Compiling main app:
 	@echo ======================================
-	$(COMPILER) $(ARG_DEBUG) -O3 $(CC_WARN_OPTS) -std=c99 -framework Cocoa -framework CalendarStore -framework AppKit -framework AddressBook -o $@ icalBuddy.m $(SOURCE_FILES)
+	$(COMPILER) $(ARG_DEBUG) -O3 $(CC_WARN_OPTS) -std=c99 -framework Cocoa -framework CalendarStore -framework AppKit -framework AddressBook -framework EventKit -o $@ icalBuddy.m $(SOURCE_FILES)
 
 
 

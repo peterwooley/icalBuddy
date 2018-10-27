@@ -31,6 +31,7 @@ THE SOFTWARE.
 #import <Foundation/Foundation.h>
 #import "calendarStoreImport.h"
 #import <AppKit/AppKit.h>
+#import <EventKit/EventKit.h>
 
 #import "HGUtils.h"
 #import "HGCLIUtils.h"
@@ -174,7 +175,7 @@ int main(int argc, char *argv[])
         if (calItems == nil)
             return 1;
 
-        CalItemPrintOption printOptions = getPrintOptions(&opts);
+        EKItemPrintOption printOptions = getPrintOptions(&opts);
 
         calItems = sortCalItems(&opts, calItems);
 
@@ -185,12 +186,12 @@ int main(int argc, char *argv[])
         }
         else
         {
-            for (CalCalendarItem *item in calItems)
+            for (EKCalendarItem *item in calItems)
             {
-                if ([item isKindOfClass:[CalEvent class]])
-                    printCalEvent((CalEvent *)item, printOptions, now);
+                if ([item isKindOfClass:[EKEvent class]])
+                    printCalEvent((EKEvent *)item, printOptions, now);
                 else
-                    printCalTask((CalTask *)item, printOptions);
+                    printCalTask((EKReminder *)item, printOptions);
             }
         }
     }

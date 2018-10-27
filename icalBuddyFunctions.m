@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
 #import "calendarStoreImport.h"
+#import <EventKit/EventKit.h>
 
 #import "icalBuddyFunctions.h"
 #import "icalBuddyDefines.h"
@@ -36,7 +37,6 @@ THE SOFTWARE.
 #import "HGCLIUtils.h"
 #import "HGDateFunctions.h"
 #import "icalBuddyL10N.h"
-
 
 
 // todo: the right place for these?
@@ -122,13 +122,22 @@ NSArray *getEvents(AppOptions *opts, NSArray *calendars)
     DebugPrintf(@"effective query start date: %@\n", opts->startDate);
     DebugPrintf(@"effective query end date:   %@\n", opts->endDate);
 
+    // EKEventStore
+    EKEventStore *store = [[EKEventStore alloc] initWithAccessToEntityTypes:EKEntityMaskEvent];
+
+    NSPredicate *predicate = [store predicateForEventsWithStartDate:opts->startDate endDate:opts->endDate calendars:nil];
+ 
+    // Fetch all events that match the predicate
+    NSArray *ret = [store eventsMatchingPredicate:predicate];
+    //DebugPrintf(@"array size is %d", [events count]);
+
     // make predicate for getting all events between start and end dates + use it to get the events
-    NSPredicate *eventsPredicate = [CALENDAR_STORE
-        eventPredicateWithStartDate:opts->startDate
-        endDate:opts->endDate
-        calendars:calendars
-        ];
-    NSArray *ret = [[CALENDAR_STORE defaultCalendarStore] eventsWithPredicate:eventsPredicate];
+    //NSPredicate *eventsPredicate = [CALENDAR_STORE
+    //    eventPredicateWithStartDate:opts->startDate
+    //    endDate:opts->endDate
+    //    calendars:calendars
+    //    ];
+    //NSArray *ret = [[CALENDAR_STORE defaultCalendarStore] eventsWithPredicate:eventsPredicate];
 
     // filter results
     if (opts->excludeAllDayEvents)
@@ -203,20 +212,20 @@ NSArray *getCalItems(AppOptions *opts)
 
 
 // sort function for sorting tasks:
-// - sort numerically by priority except treat CalPriorityNone (0) as a special case
+// - sort numerically by priority except treat EKReminderPriorityNone (0) as a special case
 // - if priorities match, sort tasks that are late from their due date to be first and then
 //   order alphabetically by title
-NSInteger prioritySort(CalTask *task1, CalTask *task2, void *context)
+NSInteger prioritySort(EKReminder *task1, EKReminder *task2, void *context)
 {
     if ([task1 priority] < [task2 priority])
     {
-        if ([task1 priority] == CalPriorityNone)
+        if ([task1 priority] == EKReminderPriorityNone)
             return NSOrderedDescending;
         else
             return NSOrderedAscending;
     }
     else if ([task1 priority] > [task2 priority])
-        if ([task2 priority] == CalPriorityNone)
+        if ([task2 priority] == EKReminderPriorityNone)
             return NSOrderedAscending;
         else
             return NSOrderedDescending;
@@ -288,12 +297,12 @@ NSArray *sortCalItems(AppOptions *opts, NSArray *calItems)
 }
 
 
-CalItemPrintOption getPrintOptions(AppOptions *opts)
+EKItemPrintOption getPrintOptions(AppOptions *opts)
 {
     BOOL printingEvents = areWePrintingEvents(opts);
     BOOL printingTasks = areWePrintingTasks(opts);
 
-    CalItemPrintOption printOptions = {NO,NO,NO,NO,NO,0,0};
+    EKItemPrintOption printOptions = {NO,NO,NO,NO,NO,0,0};
 
     // set default print options
     if (printingEvents)
@@ -351,7 +360,7 @@ NSArray *putItemsUnderSections(AppOptions *opts, NSArray *calItems)
         NSArray *calendars = getCalendars(opts);
         sections = [NSMutableArray arrayWithCapacity:[calendars count]];
 
-        for (CalCalendar *cal in calendars)
+        for (EKCalendar *cal in calendars)
         {
             NSMutableArray *thisCalendarItems = [NSMutableArray arrayWithCapacity:((printingEvents)?[calItems count]:[calItems count])];
 
@@ -379,7 +388,7 @@ NSArray *putItemsUnderSections(AppOptions *opts, NSArray *calItems)
         {
             // fill allDays using event start dates' days and all spanned days thereafter
             // if the event spans multiple days
-            for (CalEvent *anEvent in calItems)
+            for (EKEvent *anEvent in calItems)
             {
                 // calculate anEvent's days span and limit it to the range of days we
                 // want displayed
@@ -436,7 +445,7 @@ NSArray *putItemsUnderSections(AppOptions *opts, NSArray *calItems)
         else if (printingTasks)
         {
             // fill allDays using task due dates' days
-            for (CalTask *aTask in calItems)
+            for (EKReminder *aTask in calItems)
             {
                 id thisDayKey = nil;
                 if ([aTask dueDate] != nil)
@@ -538,13 +547,13 @@ NSArray *putItemsUnderSections(AppOptions *opts, NSArray *calItems)
         sections = [NSMutableArray arrayWithCapacity:4];
 
         // None = 0, High = 1, Medium = 5, Low = 9
-        CalPriority priorities[] = {CalPriorityHigh, CalPriorityMedium, CalPriorityLow, CalPriorityNone};
+        EKReminderPriority priorities[] = {EKReminderPriorityHigh, EKReminderPriorityMedium, EKReminderPriorityLow, EKReminderPriorityNone};
         int len_priorities = 4;
         for (int i = 0; i < len_priorities; i++)
         {
-            CalPriority priority = priorities[i];
+            EKReminderPriority priority = priorities[i];
             NSMutableArray *thisCalendarItems = [NSMutableArray arrayWithCapacity:[calItems count]];
-            for (CalTask *aTask in calItems)
+            for (EKReminder *aTask in calItems)
             {
                 if ([aTask priority] == priority)
                     [thisCalendarItems addObject:aTask];
@@ -576,19 +585,19 @@ NSArray *getCalendarStoreCalTypeValuesForUserProvidedValues(NSArray *userProvide
     for (NSString *userProvidedType in userProvidedCalTypes)
     {
         if ([userProvidedType caseInsensitiveCompare:kCalendarTypeBirthday] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeBirthday];
+            [ret addObject:EKCalendarTypeBirthday];
         else if ([userProvidedType caseInsensitiveCompare:kCalendarTypeCalDAV] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeCalDAV];
+            [ret addObject:EKCalendarTypeCalDAV];
         else if ([userProvidedType caseInsensitiveCompare:kCalendarTypeiCloud] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeCalDAV];
+            [ret addObject:EKCalendarTypeCalDAV];
         else if ([userProvidedType caseInsensitiveCompare:kCalendarTypeExchange] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeExchange];
+            [ret addObject:EKCalendarTypeExchange];
         else if ([userProvidedType caseInsensitiveCompare:kCalendarTypeIMAP] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeIMAP];
+            [ret addObject:EKCalendarTypeCalDAV];
         else if ([userProvidedType caseInsensitiveCompare:kCalendarTypeLocal] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeLocal];
+            [ret addObject:EKCalendarTypeLocal];
         else if ([userProvidedType caseInsensitiveCompare:kCalendarTypeSubscription] == NSOrderedSame)
-            [ret addObject:CalCalendarTypeSubscription];
+            [ret addObject:EKCalendarTypeSubscription];
     }
     return ret;
 }

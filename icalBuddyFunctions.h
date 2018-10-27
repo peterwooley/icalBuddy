@@ -45,7 +45,7 @@ NSArray *getCalItems(AppOptions *opts);
 NSArray *sortCalItems(AppOptions *opts, NSArray *calItems);
 NSArray *putItemsUnderSections(AppOptions *opts, NSArray *calItems);
 
-CalItemPrintOption getPrintOptions(AppOptions *opts);
+EKItemPrintOption getPrintOptions(AppOptions *opts);
 NSArray *getCalendars(AppOptions *opts);
 
 void printAvailableStringEncodings();

@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
 #import "calendarStoreImport.h"
+#import <EventKit/EventKit.h>
 #import "icalBuddyDefines.h"
 
 
@@ -79,7 +80,7 @@ typedef struct
     BOOL priorityAgnostic;
     NSUInteger maxNumPrintedAttendees;
     NSUInteger maxNumNoteCharacters;
-} CalItemPrintOption;
+} EKItemPrintOption;
 
 
 typedef enum datePrintOption
@@ -95,15 +96,15 @@ void initPrettyPrint(NSMutableAttributedString *aOutputBuffer, PrettyPrintOption
 PrettyPrintOptions getDefaultPrettyPrintOptions();
 
 NSString *dateStr(NSDate *date, DatePrintOption printOption);
-NSString *localizedPriority(CalPriority priority);
-NSString *localizedPriorityTitle(CalPriority priority);
+NSString *localizedPriority(EKReminderPriority priority);
+NSString *localizedPriorityTitle(EKReminderPriority priority);
 
-NSMutableAttributedString* getEventPropStr(NSString *propName, CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay);
-NSMutableAttributedString* getTaskPropStr(NSString *propName, CalTask *task, CalItemPrintOption printOptions);
+NSMutableAttributedString* getEventPropStr(NSString *propName, EKEvent *event,EKItemPrintOption printOptions, NSDate *contextDay);
+NSMutableAttributedString* getTaskPropStr(NSString *propName,EKReminder *task,EKItemPrintOption printOptions);
 
-void printCalEvent(CalEvent *event, CalItemPrintOption printOptions, NSDate *contextDay);
-void printCalTask(CalTask *task, CalItemPrintOption printOptions);
-void printItemSections(NSArray *sections, CalItemPrintOption printOptions);
+void printCalEvent(EKEvent *event,EKItemPrintOption printOptions, NSDate *contextDay);
+void printCalTask(EKReminder *task,EKItemPrintOption printOptions);
+void printItemSections(NSArray *sections,EKItemPrintOption printOptions);
 
 void printAllCalendars(AppOptions *opts);
 
