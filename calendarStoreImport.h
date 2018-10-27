@@ -31,8 +31,8 @@ THE SOFTWARE.
     #import "calendarStoreMock/MockCalCalendarStore.h"
     #define CALENDAR_STORE  MockCalCalendarStore
 #else
-    #import <CalendarStore/CalendarStore.h>
-    #define CALENDAR_STORE  CalCalendarStore
+    #import <EventKit/EventKit.h>
+    #define CALENDAR_STORE  EKEventStore
 #endif
 
 

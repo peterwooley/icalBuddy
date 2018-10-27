@@ -125,11 +125,11 @@ NSArray *getEvents(AppOptions *opts, NSArray *calendars)
     // EKEventStore
     EKEventStore *store = [[EKEventStore alloc] initWithAccessToEntityTypes:EKEntityMaskEvent];
 
+    // TODO: Include filtered calendar list
     NSPredicate *predicate = [store predicateForEventsWithStartDate:opts->startDate endDate:opts->endDate calendars:nil];
  
     // Fetch all events that match the predicate
     NSArray *ret = [store eventsMatchingPredicate:predicate];
-    //DebugPrintf(@"array size is %d", [events count]);
 
     // make predicate for getting all events between start and end dates + use it to get the events
     //NSPredicate *eventsPredicate = [CALENDAR_STORE
@@ -574,9 +574,9 @@ NSArray *putItemsUnderSections(AppOptions *opts, NSArray *calItems)
 void filterCalendarsByNameOrUID(NSMutableArray *cals, AppOptions *opts)
 {
     if (opts->includeCals != nil)
-        [cals filterUsingPredicate:[NSPredicate predicateWithFormat:@"(uid IN %@) OR (title IN %@)", opts->includeCals, opts->includeCals]];
+        [cals filterUsingPredicate:[NSPredicate predicateWithFormat:@"(calendarIdentifier IN %@) OR (title IN %@)", opts->includeCals, opts->includeCals]];
     if (opts->excludeCals != nil)
-        [cals filterUsingPredicate:[NSPredicate predicateWithFormat:@"(NOT(uid IN %@)) AND (NOT(title IN %@))", opts->excludeCals, opts->excludeCals]];
+        [cals filterUsingPredicate:[NSPredicate predicateWithFormat:@"(NOT(calendarIdentifier IN %@)) AND (NOT(title IN %@))", opts->excludeCals, opts->excludeCals]];
 }
 
 NSArray *getCalendarStoreCalTypeValuesForUserProvidedValues(NSArray *userProvidedCalTypes)
@@ -633,7 +633,8 @@ void filterCalendars(NSMutableArray *cals, AppOptions *opts)
 
 NSArray *getCalendars(AppOptions *opts)
 {
-    NSMutableArray *calendars = [[[[CALENDAR_STORE defaultCalendarStore] calendars] mutableCopy] autorelease];
+    // TODO: Switch to EventKit Calendar Store
+    NSMutableArray *calendars = [[[[[EKEventStore alloc] initWithAccessToEntityTypes:EKEntityMaskEvent] calendarsForEntityType:EKEntityTypeEvent] mutableCopy] autorelease];
     filterCalendars(calendars, opts);
     return calendars;
 }

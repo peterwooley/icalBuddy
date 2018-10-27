@@ -620,7 +620,6 @@ NSMutableAttributedString* getEventPropStr(NSString *propName, EKEvent *event, E
             ];
     }
 
-    DebugPrintf(@"event: %@\n", [event title]);
     //[elements.value
     //    setAttributes:getPropValueStringAttributes(propName, [elements.value string], event)
     //    range:NSMakeRange(0, [elements.value length])
@@ -648,7 +647,6 @@ NSMutableAttributedString* getEventPropStr(NSString *propName, EKEvent *event, E
     //    [retVal appendAttributedString:elements.name];
     //}
 
-    DebugPrintf(@"elements.value: %@\n", elements.value);
     [retVal appendAttributedString:elements.value];
 
     return retVal;
