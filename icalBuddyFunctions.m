@@ -123,10 +123,9 @@ NSArray *getEvents(AppOptions *opts, NSArray *calendars)
     DebugPrintf(@"effective query end date:   %@\n", opts->endDate);
 
     // EKEventStore
-    EKEventStore *store = [[EKEventStore alloc] initWithAccessToEntityTypes:EKEntityMaskEvent];
+    EKEventStore *store = [[CALENDAR_STORE alloc] init];
 
-    // TODO: Include filtered calendar list
-    NSPredicate *predicate = [store predicateForEventsWithStartDate:opts->startDate endDate:opts->endDate calendars:nil];
+    NSPredicate *predicate = [store predicateForEventsWithStartDate:opts->startDate endDate:opts->endDate calendars:calendars];
  
     // Fetch all events that match the predicate
     NSArray *ret = [store eventsMatchingPredicate:predicate];
@@ -633,8 +632,7 @@ void filterCalendars(NSMutableArray *cals, AppOptions *opts)
 
 NSArray *getCalendars(AppOptions *opts)
 {
-    // TODO: Switch to EventKit Calendar Store
-    NSMutableArray *calendars = [[[[[EKEventStore alloc] initWithAccessToEntityTypes:EKEntityMaskEvent] calendarsForEntityType:EKEntityTypeEvent] mutableCopy] autorelease];
+    NSMutableArray *calendars = [[[[[CALENDAR_STORE alloc] init] calendarsForEntityType:EKEntityTypeEvent] mutableCopy] autorelease];
     filterCalendars(calendars, opts);
     return calendars;
 }
