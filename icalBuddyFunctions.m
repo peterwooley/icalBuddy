@@ -130,14 +130,6 @@ NSArray *getEvents(AppOptions *opts, NSArray *calendars)
     // Fetch all events that match the predicate
     NSArray *ret = [store eventsMatchingPredicate:predicate];
 
-    // make predicate for getting all events between start and end dates + use it to get the events
-    //NSPredicate *eventsPredicate = [CALENDAR_STORE
-    //    eventPredicateWithStartDate:opts->startDate
-    //    endDate:opts->endDate
-    //    calendars:calendars
-    //    ];
-    //NSArray *ret = [[CALENDAR_STORE defaultCalendarStore] eventsWithPredicate:eventsPredicate];
-
     // filter results
     if (opts->excludeAllDayEvents)
         ret = [ret filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"isAllDay == NO"]];

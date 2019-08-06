@@ -293,49 +293,49 @@ PropertyPresentationElements *getEventTitlePresentation(EKEvent *event, EKItemPr
 
     NSString *thisPropTempValue = nil;
 
-    //if ([[[event calendar] type] isEqualToString:EKCalendarTypeBirthday])
-    //{
-    //    ABAddressBook *addressBook = [ABAddressBook sharedAddressBook];
+    // if ([[event calendar] type] == EKCalendarTypeBirthday)
+    // {
+    //     ABAddressBook *addressBook = [ABAddressBook sharedAddressBook];
 
-    //    // If the user has Mountain Lion or later, and has denied icalBuddy access to their
-    //    // contacts, then -sharedAddressBook will return nil.
-    //    if (addressBook == nil)
-    //    {
-    //        thisPropTempValue = [event title];
-    //    }
-    //    else
-    //    {
-    //        // special case for events in the Birthdays calendar (they don't seem to have titles
-    //        // so we have to use the URI to find the ABPerson from the Address Book
-    //        // and print their name from there)
+    //     // If the user has Mountain Lion or later, and has denied icalBuddy access to their
+    //     // contacts, then -sharedAddressBook will return nil.
+    //     if (addressBook == nil)
+    //     {
+    //         thisPropTempValue = [event title];
+    //     }
+    //     else
+    //     {
+    //         // special case for events in the Birthdays calendar (they don't seem to have titles
+    //         // so we have to use the URI to find the ABPerson from the Address Book
+    //         // and print their name from there)
 
-    //        NSString *personId = [[NSString stringWithFormat:@"%@", [event URL]]
-    //            stringByReplacingOccurrencesOfString:@"addressbook://"
-    //            withString:@""
-    //            ];
-    //        ABRecord *person = [[ABAddressBook sharedAddressBook] recordForUniqueId:personId];
+    //         NSString *personId = [[NSString stringWithFormat:@"%@", [event URL]]
+    //             stringByReplacingOccurrencesOfString:@"addressbook://"
+    //             withString:@""
+    //             ];
+    //         ABRecord *person = [[ABAddressBook sharedAddressBook] recordForUniqueId:personId];
 
-    //        if (person != nil && [person isMemberOfClass: [ABPerson class]])
-    //        {
-    //            NSString *thisTitle = nil;
-    //            if ([person isEqual:[[ABAddressBook sharedAddressBook] me]])
-    //                thisTitle = localizedStr(kL10nKeyMyBirthday);
-    //            else
-    //            {
-    //                NSString *contactFullName = [person hg_fullName];
-    //                NSInteger contactAge = [person hg_ageOnDate:[event startDate]];
-    //                BOOL ageIsValid = (0 < contactAge && contactAge < 130);
-    //                NSString *birthdayFormat = localizedStr(ageIsValid ? kL10nKeySomeonesBirthday : kL10nKeySomeonesBirthdayNoAge);
-    //                if ([birthdayFormat rangeOfString:@"%i"].location != NSNotFound)
-    //                    thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName, contactAge];
-    //                else
-    //                    thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName];
-    //            }
-    //            thisPropTempValue = thisTitle;
-    //        }
-    //    }
-    //}
-    //else
+    //         if (person != nil && [person isMemberOfClass: [ABPerson class]])
+    //         {
+    //             NSString *thisTitle = nil;
+    //             if ([person isEqual:[[ABAddressBook sharedAddressBook] me]])
+    //                 thisTitle = localizedStr(kL10nKeyMyBirthday);
+    //             else
+    //             {
+    //                 NSString *contactFullName = [person hg_fullName];
+    //                 NSInteger contactAge = [person hg_ageOnDate:[event startDate]];
+    //                 BOOL ageIsValid = (0 < contactAge && contactAge < 130);
+    //                 NSString *birthdayFormat = localizedStr(ageIsValid ? kL10nKeySomeonesBirthday : kL10nKeySomeonesBirthdayNoAge);
+    //                 if ([birthdayFormat rangeOfString:@"%i"].location != NSNotFound)
+    //                     thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName, contactAge];
+    //                 else
+    //                     thisTitle = [NSString stringWithFormat:birthdayFormat, contactFullName];
+    //             }
+    //             thisPropTempValue = thisTitle;
+    //         }
+    //     }
+    // }
+    // else
         thisPropTempValue = [event title];
 
     if (thisPropTempValue != nil)
